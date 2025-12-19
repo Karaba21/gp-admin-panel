@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ===== ULTRA MODERN ADMIN PANEL ===== */
 
@@ -259,7 +259,6 @@ body::before {
   background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
   animation: pulse 8s ease-in-out infinite;
   pointer-events: none;
-  z-index: -1;
 }
 
 @keyframes pulse {
@@ -298,11 +297,6 @@ body::before {
   font-weight: 500;
   position: relative;
   z-index: 1;
-}
-
-.login-form {
-  position: relative;
-  z-index: 10;
 }
 
 /* ===== MAIN CONTENT ===== */
