@@ -1,10 +1,8 @@
-'use client';
-
 import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { Auto } from '@/types/auto';
 import { compressFiles } from '@/lib/imageCompression';
-import { uploadFiles, deleteFiles, isVideoUrl } from '@/lib/storageHelpers';
+import { isVideoUrl, getFileNameFromUrl } from '@/lib/storageHelpers';
+import { updateAutoAction, deleteFileAction, getUploadParams } from '@/app/actions/autos';
 
 interface EditAutoModalProps {
     auto: Auto;
@@ -64,38 +62,47 @@ export default function EditAutoModal({ auto, onClose, onSave }: EditAutoModalPr
                 setEstado('Procesando nuevas imágenes...');
                 const newFilesArray = Array.from(newFiles);
                 const compressedFiles = await compressFiles(newFilesArray, 0.7);
-                const newUrls = await uploadFiles(compressedFiles);
-                finalFiles = [...finalFiles, ...newUrls];
+
+                const uploadedUrls: string[] = [];
+                for (const file of compressedFiles) {
+                    const uniqueName = `${Date.now()}-${file.name}`;
+                    const { signedUrl, publicUrl } = await getUploadParams(uniqueName);
+
+                    await fetch(signedUrl, {
+                        method: 'PUT',
+                        body: file,
+                        headers: { 'Content-Type': file.type }
+                    });
+                    uploadedUrls.push(publicUrl);
+                }
+
+                finalFiles = [...finalFiles, ...uploadedUrls];
             }
 
             // Eliminar archivos del storage
             if (filesToDelete.length > 0) {
                 setEstado('Eliminando archivos...');
-                await deleteFiles(filesToDelete);
+                for (const url of filesToDelete) {
+                    const filename = getFileNameFromUrl(url);
+                    if (filename) await deleteFileAction(filename);
+                }
             }
 
             setEstado('Guardando cambios...');
 
             // Actualizar en base de datos
-            const { error } = await supabase
-                .from('Autos')
-                .update({
-                    marca,
-                    modelo,
-                    año: parseInt(año),
-                    precio: parseFloat(precio),
-                    descripcion,
-                    en_oferta: enOferta,
-                    precio_oferta: enOferta ? parseFloat(precioOferta) : null,
-                    vendido,
-                    reservado,
-                    imagenes: finalFiles,
-                })
-                .eq('id', auto.id);
-
-            if (error) {
-                throw error;
-            }
+            await updateAutoAction(auto.id, {
+                marca,
+                modelo,
+                año: parseInt(año),
+                precio: parseFloat(precio),
+                descripcion,
+                en_oferta: enOferta,
+                precio_oferta: enOferta ? parseFloat(precioOferta) : null,
+                vendido,
+                reservado,
+                imagenes: finalFiles,
+            });
 
             setEstado('Auto actualizado correctamente ✅');
             setTimeout(() => {

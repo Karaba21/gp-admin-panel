@@ -1,9 +1,7 @@
-'use client';
-
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { Auto } from '@/types/auto';
-import { deleteFiles, isVideoUrl } from '@/lib/storageHelpers';
+import { getAutosAction, deleteAutoAction, deleteFileAction } from '@/app/actions/autos';
+import { isVideoUrl, getFileNameFromUrl } from '@/lib/storageHelpers';
 import EditAutoModal from './EditAutoModal';
 
 export default function AutosList() {
@@ -17,19 +15,10 @@ export default function AutosList() {
         setError('');
 
         try {
-            const { data, error } = await supabase
-                .from('Autos')
-                .select('*')
-                .order('id', { ascending: false });
-
-            if (error) {
-                setError('Error al cargar autos: ' + error.message);
-                return;
-            }
-
+            const data = await getAutosAction();
             setAutos(data || []);
         } catch (err) {
-            setError('Error de conexión: ' + (err as Error).message);
+            setError('Error al cargar autos: ' + (err as Error).message);
         } finally {
             setLoading(false);
         }
@@ -45,21 +34,16 @@ export default function AutosList() {
         }
 
         try {
-            // Eliminar archivos del storage
+            // Eliminar archivos del storage mediante Action
             if (auto.imagenes && auto.imagenes.length > 0) {
-                await deleteFiles(auto.imagenes);
+                for (const url of auto.imagenes) {
+                    const filename = getFileNameFromUrl(url);
+                    if (filename) await deleteFileAction(filename);
+                }
             }
 
             // Eliminar auto de la base de datos
-            const { error } = await supabase
-                .from('Autos')
-                .delete()
-                .eq('id', auto.id);
-
-            if (error) {
-                alert('Error al eliminar auto: ' + error.message);
-                return;
-            }
+            await deleteAutoAction(auto.id);
 
             alert('Auto eliminado correctamente ✅');
             loadAutos();

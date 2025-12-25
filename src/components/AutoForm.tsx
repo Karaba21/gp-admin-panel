@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, FormEvent, ChangeEvent } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { compressFiles } from '@/lib/imageCompression';
-import { uploadFiles } from '@/lib/storageHelpers';
+import { createAutoAction, getUploadParams } from '@/app/actions/autos';
 
 export default function AutoForm() {
     const [marca, setMarca] = useState('');
@@ -29,34 +28,45 @@ export default function AutoForm() {
             const filesArray = files ? Array.from(files) : [];
             const compressedFiles = await compressFiles(filesArray, 0.7);
 
-            // Subir archivos
-            const urls = await uploadFiles(compressedFiles);
+            // Subir archivos mediante Signed URLs
+            const uploadedUrls: string[] = [];
+            for (const file of compressedFiles) {
+                const uniqueName = `${Date.now()}-${file.name}`;
+                const { signedUrl, publicUrl } = await getUploadParams(uniqueName);
 
-            // Insertar en base de datos
-            const { error: insertError } = await supabase.from('Autos').insert({
+                await fetch(signedUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: {
+                        'Content-Type': file.type
+                    }
+                });
+
+                uploadedUrls.push(publicUrl);
+            }
+
+            // Insertar en base de datos llamando al Server Action
+            await createAutoAction({
                 marca,
                 modelo,
                 año: parseInt(año),
                 precio: parseFloat(precio),
                 descripcion,
-                imagenes: urls,
+                imagenes: uploadedUrls,
             });
 
-            if (insertError) {
-                setEstado('Error al guardar en la base: ' + insertError.message);
-            } else {
-                setEstado('Auto subido correctamente ✅');
-                // Limpiar formulario
-                setMarca('');
-                setModelo('');
-                setAño('');
-                setPrecio('');
-                setDescripcion('');
-                setFiles(null);
-                // Reset file input
-                const fileInput = document.getElementById('imagenes') as HTMLInputElement;
-                if (fileInput) fileInput.value = '';
-            }
+            setEstado('Auto subido correctamente ✅');
+            // Limpiar formulario
+            setMarca('');
+            setModelo('');
+            setAño('');
+            setPrecio('');
+            setDescripcion('');
+            setFiles(null);
+            // Reset file input
+            const fileInput = document.getElementById('imagenes') as HTMLInputElement;
+            if (fileInput) fileInput.value = '';
+
         } catch (error) {
             setEstado('Error: ' + (error as Error).message);
         } finally {

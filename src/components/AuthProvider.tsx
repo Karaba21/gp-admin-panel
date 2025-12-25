@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabaseClient';
+import { getSessionUser, logoutAction } from '@/app/actions/auth';
 
 interface AuthContextType {
     user: User | null;
@@ -24,27 +24,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Verificar sesión actual
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
+        const checkSession = async () => {
+            try {
+                const user = await getSessionUser();
+                setUser(user);
+                // No tenemos session object completo aqui, pero basta con el user
+            } catch (error) {
+                console.error('Error checking session', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        // Escuchar cambios en autenticación
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
-
-        return () => subscription.unsubscribe();
+        checkSession();
     }, []);
 
     const signOut = async () => {
-        await supabase.auth.signOut();
+        await logoutAction();
+        setUser(null);
+        setSession(null);
     };
 
     return (

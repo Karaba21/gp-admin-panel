@@ -1,13 +1,13 @@
-'use client';
-
 import { useState, FormEvent } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
+import { loginAction } from '@/app/actions/auth';
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -21,22 +21,23 @@ export default function LoginForm() {
         setLoading(true);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('password', password);
 
-            if (error) {
-                setError('Error de autenticación: ' + error.message);
+            const res = await loginAction(formData);
+
+            if (res.error) {
+                setError('Error: ' + res.error);
+                setLoading(false);
                 return;
             }
 
-            if (!data.user) {
-                setError('Error de autenticación');
-            }
+            // Éxito: recargar para que el AuthProvider detecte la sesión
+            // o redirigir
+            window.location.reload();
         } catch (err) {
-            setError('Error de conexión: ' + (err as Error).message);
-        } finally {
+            setError('Error de conexión');
             setLoading(false);
         }
     };

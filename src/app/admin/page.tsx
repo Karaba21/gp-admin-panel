@@ -6,6 +6,7 @@ import LoginForm from '@/components/LoginForm';
 import AdminNavbar from '@/components/AdminNavbar';
 import AutoForm from '@/components/AutoForm';
 import AutosList from '@/components/AutosList';
+import CouponVerifier from '@/components/CouponVerifier';
 
 export default function AdminPage() {
     const { user, loading } = useAuth();
@@ -57,9 +58,7 @@ export default function AdminPage() {
                 {activeSection === 'leads' && (
                     <div className="content-card">
                         <h2 className="section-title">📊 Leads y Cupones</h2>
-                        <p style={{ color: 'var(--gray)', fontStyle: 'italic', textAlign: 'center', padding: '3rem 0' }}>
-                            Esta funcionalidad estará disponible próximamente.
-                        </p>
+                        <CouponVerifier />
                     </div>
                 )}
             </div>
