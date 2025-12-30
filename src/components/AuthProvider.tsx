@@ -40,9 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const signOut = async () => {
+        console.log('AuthProvider signOut called');
         await logoutAction();
         setUser(null);
         setSession(null);
+        window.location.href = '/';
     };
 
     return (

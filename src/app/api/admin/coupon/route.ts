@@ -9,53 +9,57 @@ export async function GET(request: NextRequest) {
         const code = searchParams.get('code');
 
         if (!code) {
-            return NextResponse.json({ error: 'Falta el código del cupón' }, { status: 400 });
+            return NextResponse.json({ error: 'Code is required' }, { status: 400 });
         }
 
         const normalizedCode = code.trim().toUpperCase();
         const supabase = createAdminClient();
 
-        // 1. Buscar el cupón
-        const { data: coupon, error: couponError } = await supabase
+        // Join coupons_issued with leads
+        const { data: coupon, error } = await supabase
             .from('coupons_issued')
-            .select('*')
+            .select(`
+                *,
+                leads (
+                    id,
+                    full_name,
+                    email,
+                    phone
+                )
+            `)
             .eq('coupon_code', normalizedCode)
             .single();
 
-        if (couponError || !coupon) {
-            // Si error es PGRST116 es que no encontró resultados
-            if (couponError && couponError.code !== 'PGRST116') {
-                console.error('Error buscando cupón:', couponError);
-                return NextResponse.json({ error: 'Error interno verificando cupón' }, { status: 500 });
+        if (error) {
+            if (error.code === 'PGRST116') { // No rows found
+                return NextResponse.json({ found: false });
             }
-            return NextResponse.json({ found: false });
+            console.error('Error fetching coupon:', error);
+            throw error;
         }
 
-        // 2. Buscar el lead asociado
-        const { data: lead, error: leadError } = await supabase
-            .from('leads')
-            .select('full_name, email, phone')
-            .eq('id', coupon.lead_id)
-            .single();
-
-        if (leadError) {
-            console.error('Error buscando lead del cupón:', leadError);
-            // Retornamos el cupón aunque no encontremos el lead (caso borde)
-            return NextResponse.json({
-                found: true,
-                coupon,
-                lead: null
-            });
-        }
-
-        return NextResponse.json({
+        // Flatten the structure slightly for the frontend convenience if needed, 
+        // but keeping it standard is also fine.
+        // Returning lead details under 'lead' alias key to match frontend expectation or just use the joined data
+        const result = {
             found: true,
-            coupon,
-            lead
-        });
+            coupon: {
+                ...coupon,
+                // Remove the nested leads object from within coupon to avoid confusion? 
+                // Or keep it. Let's return it separately to match the requested format: { found: true, coupon, lead }
+            },
+            lead: coupon.leads
+        };
+
+        // Remove leads from coupon object to keep it clean (optional but nice)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (result.coupon as any).leads;
+
+        return NextResponse.json(result);
+
 
     } catch (error) {
-        console.error('Error procesando request:', error);
-        return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+        console.error('API Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

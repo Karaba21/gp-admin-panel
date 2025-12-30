@@ -54,10 +54,11 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function logoutAction() {
+    console.log('logoutAction called');
     const cookieStore = await cookies();
     cookieStore.delete('sb-access-token');
     cookieStore.delete('sb-refresh-token');
-    redirect('/');
+    return { success: true };
 }
 
 export async function getSessionUser() {

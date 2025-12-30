@@ -12,9 +12,8 @@ export default function AdminNavbar({ activeSection, onSectionChange }: AdminNav
     const { user, signOut } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    if (!user) return null;
-
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
     const closeMenu = () => setIsMenuOpen(false);
 
     const handleSectionChange = (section: string) => {
@@ -41,6 +40,8 @@ export default function AdminNavbar({ activeSection, onSectionChange }: AdminNav
             document.body.style.overflow = '';
         };
     }, [isMenuOpen]);
+
+    if (!user) return null;
 
     return (
         <>
@@ -84,13 +85,20 @@ export default function AdminNavbar({ activeSection, onSectionChange }: AdminNav
                                 <span className="nav-icon">📊</span>
                                 <span>Leads/Cupones</span>
                             </button>
+                            <button
+                                className={`nav-section-btn ${activeSection === 'sorteo' ? 'active' : ''}`}
+                                onClick={() => handleSectionChange('sorteo')}
+                            >
+                                <span className="nav-icon">🏆</span>
+                                <span>Sorteo</span>
+                            </button>
                         </div>
 
                         <div className="navbar-actions">
                             <div className="user-info">
                                 <span className="user-email">{user.email}</span>
                             </div>
-                            <button className="logout-btn" onClick={() => { signOut(); closeMenu(); }}>
+                            <button className="logout-btn" onClick={() => { console.log('Logout button clicked'); signOut(); closeMenu(); }}>
                                 <span className="logout-icon">🚪</span>
                                 <span>Cerrar Sesión</span>
                             </button>
@@ -142,9 +150,17 @@ export default function AdminNavbar({ activeSection, onSectionChange }: AdminNav
                             <span className="mobile-nav-icon">📊</span>
                             <span className="mobile-nav-text">Leads/Cupones</span>
                         </button>
+                        <button
+                            className={`mobile-nav-item ${activeSection === 'sorteo' ? 'active' : ''}`}
+                            onClick={() => handleSectionChange('sorteo')}
+                        >
+                            <span className="mobile-nav-indicator"></span>
+                            <span className="mobile-nav-icon">🏆</span>
+                            <span className="mobile-nav-text">Sorteo</span>
+                        </button>
                     </div>
 
-                    <button className="mobile-logout-btn" onClick={() => { signOut(); closeMenu(); }}>
+                    <button className="mobile-logout-btn" onClick={() => { console.log('Mobile logout button clicked'); signOut(); closeMenu(); }}>
                         <span className="mobile-logout-icon">🚪</span>
                         <span>Cerrar Sesión</span>
                     </button>
