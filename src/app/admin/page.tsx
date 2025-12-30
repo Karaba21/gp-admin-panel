@@ -22,18 +22,17 @@ export default function AdminPage() {
         );
     }
 
-    // TEMPORARY BYPASS FOR UI TESTING
-    // if (!user) {
-    //     return (
-    //         <div className="login-container">
-    //             <div className="login-card">
-    //                 <h1 className="login-title">🚗 Admin Panel</h1>
-    //                 <p className="login-subtitle">Gestión de Autos - Inicia sesión para continuar</p>
-    //                 <LoginForm />
-    //             </div>
-    //         </div>
-    //     );
-    // }
+    if (!user) {
+        return (
+            <div className="login-container">
+                <div className="login-card">
+                    <h1 className="login-title">🚗 Admin Panel</h1>
+                    <p className="login-subtitle">Gestión de Autos - Inicia sesión para continuar</p>
+                    <LoginForm />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>
