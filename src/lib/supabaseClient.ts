@@ -10,5 +10,14 @@ export const createServerClient = async () => {
     throw new Error('Faltan variables de entorno de Supabase');
   }
 
-  return createClient(supabaseUrl, supabaseKey);
+  return createClient(supabaseUrl, supabaseKey, {
+    global: {
+      fetch: (url, options) => {
+        return fetch(url, {
+          ...options,
+          cache: 'no-store',
+        });
+      },
+    },
+  });
 };
