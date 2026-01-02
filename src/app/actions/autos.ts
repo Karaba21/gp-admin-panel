@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabaseClient';
 import { createAdminClient } from '@/lib/supabaseAdmin';
 import { getSessionUser } from './auth'; // Assuming auth.ts is in the same folder
 import { Auto } from '@/types/auto';
+import { revalidatePath } from 'next/cache';
 
 export async function getAutosAction() {
     // For reading, we use the standard client. 
@@ -36,6 +37,8 @@ export async function deleteAutoAction(id: number) {
         .eq('id', id);
 
     if (error) throw new Error(error.message);
+
+    revalidatePath('/admin');
     return true;
 }
 
@@ -53,6 +56,8 @@ export async function createAutoAction(auto: Partial<Auto>) {
         .insert(auto);
 
     if (error) throw new Error(error.message);
+
+    revalidatePath('/admin');
     return true;
 }
 
@@ -84,6 +89,8 @@ export async function updateAutoAction(id: number, updates: Partial<Auto>) {
     }
 
     console.log('Update successful:', data);
+
+    revalidatePath('/admin');
     return true;
 }
 
