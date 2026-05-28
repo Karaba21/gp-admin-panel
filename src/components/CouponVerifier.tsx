@@ -263,87 +263,90 @@ export default function CouponVerifier() {
                 {/* Right: Detail Card */}
                 <div className="space-y-6">
                     {selectedCoupon ? (
-                        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl animate-fade-in relative p-6">
+                        <div className="bg-white border border-gray-200 rounded-2xl shadow-xl animate-fade-in">
                             {/* Header */}
-                            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200 flex justify-between items-start">
-                                <div>
-                                    <p className="text-gray-500 text-xs uppercase tracking-widest mb-4">Detalle del Cupón</p>
-                                    <h2 className="text-5xl font-mono font-bold text-gray-900 tracking-wider leading-relaxed py-2">{selectedCoupon.coupon_code}</h2>
+                            <div style={{ padding: '28px 32px 22px 32px', borderBottom: '1px solid #f3f4f6' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
+                                    <p style={{ margin: 0, color: '#9ca3af', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Detalle del Cupón</p>
+                                    <span style={{
+                                        flexShrink: 0, padding: '4px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700,
+                                        textTransform: 'uppercase', letterSpacing: '0.05em', border: '1px solid',
+                                        background: selectedCoupon.validated ? '#f0fdf4' : '#fffbeb',
+                                        color: selectedCoupon.validated ? '#16a34a' : '#d97706',
+                                        borderColor: selectedCoupon.validated ? '#bbf7d0' : '#fde68a',
+                                    }}>
+                                        {selectedCoupon.validated ? '✓ Validado' : 'Sin validar'}
+                                    </span>
                                 </div>
-                                <div className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide border ${selectedCoupon.validated
-                                    ? 'bg-green-500/10 text-green-400 border-green-500/30'
-                                    : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
-                                    }`}>
-                                    {selectedCoupon.validated ? 'VALIDADO' : 'NO VALIDADO'}
-                                </div>
+                                <h2 style={{ margin: 0, fontFamily: 'monospace', fontSize: 30, fontWeight: 700, color: '#111827', letterSpacing: '0.05em' }}>{selectedCoupon.coupon_code}</h2>
                             </div>
 
                             {/* Body */}
-                            <div className="py-8 space-y-8">
+                            <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
                                 {/* Lead Info */}
-                                <div className="space-y-6">
-                                    <h4 className="text-[var(--accent-secondary)] font-bold text-sm uppercase tracking-wider mb-6">Datos del Cliente</h4>
-                                    <div className="grid grid-cols-2 gap-8">
-                                        <div className="bg-gray-100 p-6 rounded-2xl">
-                                            <span className="block text-gray-500 text-xs mb-2">Nombre</span>
-                                            <span className="font-medium text-gray-900">{selectedCoupon.lead?.full_name || '-'}</span>
+                                <div>
+                                    <p style={{ margin: '0 0 12px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9ca3af' }}>Datos del Cliente</p>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                        <div style={{ background: '#f9fafb', borderRadius: 12, padding: '12px 16px', minWidth: 0 }}>
+                                            <span style={{ display: 'block', color: '#9ca3af', fontSize: 11, marginBottom: 4 }}>Nombre</span>
+                                            <span style={{ fontWeight: 600, color: '#1f2937', fontSize: 14, wordBreak: 'break-word' }}>{selectedCoupon.lead?.full_name || '-'}</span>
                                         </div>
-                                        <div className="bg-gray-100 p-6 rounded-2xl">
-                                            <span className="block text-gray-500 text-xs mb-2">Teléfono</span>
-                                            <span className="font-medium text-gray-900">{selectedCoupon.lead?.phone || '-'}</span>
+                                        <div style={{ background: '#f9fafb', borderRadius: 12, padding: '12px 16px', minWidth: 0 }}>
+                                            <span style={{ display: 'block', color: '#9ca3af', fontSize: 11, marginBottom: 4 }}>Teléfono</span>
+                                            <span style={{ fontWeight: 600, color: '#1f2937', fontSize: 14, wordBreak: 'break-word' }}>{selectedCoupon.lead?.phone || '-'}</span>
                                         </div>
-                                        <div className="col-span-2 bg-gray-100 p-6 rounded-2xl">
-                                            <span className="block text-gray-500 text-xs mb-2">Email</span>
-                                            <span className="font-medium text-gray-900">{selectedCoupon.lead?.email || '-'}</span>
+                                        <div style={{ background: '#f9fafb', borderRadius: 12, padding: '12px 16px', gridColumn: '1 / -1', minWidth: 0 }}>
+                                            <span style={{ display: 'block', color: '#9ca3af', fontSize: 11, marginBottom: 4 }}>Email</span>
+                                            <span style={{ fontWeight: 600, color: '#1f2937', fontSize: 14, wordBreak: 'break-all' }}>{selectedCoupon.lead?.email || '-'}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Timestamps */}
-                                <div className="space-y-6 pt-10 border-t border-gray-100">
-                                    <h4 className="text-[var(--accent-secondary)] font-bold text-sm uppercase tracking-wider mb-6">Historial</h4>
-                                    <div className="text-sm space-y-4">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Emitido:</span>
-                                            <span className="text-gray-900 font-medium">{formatDate(selectedCoupon.issued_at)}</span>
+                                <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 20 }}>
+                                    <p style={{ margin: '0 0 12px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9ca3af' }}>Historial</p>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 14 }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span style={{ color: '#6b7280' }}>Emitido:</span>
+                                            <span style={{ color: '#374151', fontWeight: 500 }}>{formatDate(selectedCoupon.issued_at)}</span>
                                         </div>
                                         {selectedCoupon.validated_at && (
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-500">Validado:</span>
-                                                <span className="text-green-600 font-bold">{formatDate(selectedCoupon.validated_at)}</span>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span style={{ color: '#6b7280' }}>Validado:</span>
+                                                <span style={{ color: '#16a34a', fontWeight: 600 }}>{formatDate(selectedCoupon.validated_at)}</span>
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* Notes */}
-                                <div className="pt-10 border-t border-gray-100">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h4 className="text-[var(--accent-secondary)] font-bold text-sm uppercase tracking-wider">Notas</h4>
+                                <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 20 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                        <p style={{ margin: 0, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9ca3af' }}>Notas</p>
                                         <button
                                             onClick={() => setEditingNotes(!editingNotes)}
-                                            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors w-auto max-w-xs"
+                                            style={{ width: 'auto', marginTop: 0, padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: editingNotes ? '#fee2e2' : '#f3f4f6', color: editingNotes ? '#dc2626' : '#374151', border: 'none', cursor: 'pointer' }}
                                         >
-                                            {editingNotes ? 'CANCELAR' : 'EDITAR'}
+                                            {editingNotes ? 'Cancelar' : 'Editar'}
                                         </button>
                                     </div>
                                     {editingNotes ? (
-                                        <div className="space-y-4">
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                             <textarea
-                                                className="w-full bg-white border border-gray-200 rounded-xl p-4 text-sm text-gray-800 resize-none h-28 focus:border-[var(--accent-primary)] outline-none transition-all"
+                                                style={{ width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, fontSize: 14, color: '#1f2937', resize: 'none', height: 96, outline: 'none', fontFamily: 'inherit' }}
                                                 value={notesBuffer}
                                                 onChange={(e) => setNotesBuffer(e.target.value)}
                                                 placeholder="Agregar notas internas..."
                                             />
                                             <button
                                                 onClick={saveNotes}
-                                                className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-xl text-sm transition-colors w-auto max-w-xs"
+                                                style={{ width: 'auto', marginTop: 0, padding: '8px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, background: '#1e40af', color: '#fff', border: 'none', cursor: 'pointer' }}
                                             >
-                                                Guardar Notas
+                                                Guardar notas
                                             </button>
                                         </div>
                                     ) : (
-                                        <div className="bg-gray-50 p-6 rounded-xl min-h-[80px] text-sm text-gray-600 italic">
+                                        <div style={{ background: '#f9fafb', borderRadius: 12, padding: '12px 16px', minHeight: 60, fontSize: 14, color: '#6b7280', fontStyle: 'italic' }}>
                                             {selectedCoupon.notes || 'Sin notas.'}
                                         </div>
                                     )}
@@ -351,21 +354,22 @@ export default function CouponVerifier() {
                             </div>
 
                             {/* Actions Footer */}
-                            <div className="p-8 bg-gray-50 rounded-2xl border border-gray-200 flex justify-end">
+                            <div style={{ padding: '0 32px 32px' }}>
                                 {selectedCoupon.validated ? (
                                     <button
                                         onClick={handleUnvalidate}
-                                        className="py-3 px-8 rounded-xl font-bold bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500/20 transition-all w-auto max-w-xs"
+                                        style={{ width: '100%', marginTop: 0, background: '#fff1f2', color: '#dc2626', border: '1px solid #fecaca' }}
+                                        className="py-3 rounded-xl font-bold text-sm transition-all hover:opacity-80"
                                     >
-                                        🚫 ANULAR VALIDACIÓN
+                                        Anular validación
                                     </button>
                                 ) : (
                                     <button
                                         onClick={handleValidate}
-                                        className="py-3 px-10 rounded-xl font-bold text-black text-lg shadow-lg hover:brightness-110 transition-all transform hover:scale-[1.02] w-auto max-w-xs"
-                                        style={{ background: 'var(--gradient-success)' }}
+                                        style={{ width: '100%', marginTop: 0, background: 'linear-gradient(135deg, #16a34a, #15803d)', color: '#fff', boxShadow: '0 4px 14px rgba(22,163,74,0.35)' }}
+                                        className="py-4 rounded-xl font-bold text-base tracking-wide transition-all hover:opacity-90 hover:scale-[1.01]"
                                     >
-                                        ✅ VALIDAR COMPRA
+                                        Validar compra
                                     </button>
                                 )}
                             </div>
