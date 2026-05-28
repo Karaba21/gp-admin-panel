@@ -26,8 +26,8 @@ export default function AdminPage() {
         return (
             <div className="login-container">
                 <div className="login-card">
-                    <h1 className="login-title">🚗 Admin Panel</h1>
-                    <p className="login-subtitle">Gestión de Autos - Inicia sesión para continuar</p>
+                    <h1 className="login-title">GP Automóviles</h1>
+                    <p className="login-subtitle">Panel de administración — inicia sesión para continuar</p>
                     <LoginForm />
                 </div>
             </div>
@@ -44,21 +44,21 @@ export default function AdminPage() {
             <div className="admin-container">
                 {activeSection === 'agregar' && (
                     <div className="content-card">
-                        <h2 className="section-title">➕ Agregar Nuevo Auto</h2>
+                        <h2 className="section-title">Agregar Nuevo Auto</h2>
                         <AutoForm />
                     </div>
                 )}
 
                 {activeSection === 'gestionar' && (
                     <div className="content-card">
-                        <h2 className="section-title">📋 Gestionar Autos</h2>
+                        <h2 className="section-title">Gestionar Autos</h2>
                         <AutosList />
                     </div>
                 )}
 
                 {activeSection === 'leads' && (
                     <div className="content-card">
-                        <h2 className="section-title">📊 Leads y Cupones</h2>
+                        <h2 className="section-title">Leads y Cupones</h2>
                         <CouponVerifier />
                     </div>
                 )}

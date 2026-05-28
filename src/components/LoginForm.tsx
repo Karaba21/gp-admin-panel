@@ -67,7 +67,7 @@ export default function LoginForm() {
                 />
             </label>
             <button type="submit" disabled={loading}>
-                {loading ? '🔄 Entrando...' : '🔐 Entrar'}
+                {loading ? 'Entrando...' : 'Iniciar sesión'}
             </button>
             {error && (
                 <p style={{ color: 'var(--danger)', marginTop: '1rem', textAlign: 'center', fontWeight: '500' }}>
